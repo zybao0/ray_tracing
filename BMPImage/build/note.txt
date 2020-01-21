@@ -1,0 +1,4 @@
+using commend
+g++ BMPImage.cpp -c -O2 -std=c++11
+ar -crv libBMPImage.a *.o
+to build 
