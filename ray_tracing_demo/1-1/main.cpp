@@ -1,3 +1,4 @@
+//save Image
 #include<ray.h>
 #include<cstdlib>
 #include<cstring>
