@@ -1,28 +1,28 @@
 #pragma once
 #include"myVec2.h"
 #include"myVec3.h"
-#include<random>
-#include<ctime>
 using namespace gm;
-using namespace std;
+
 using value_type=precision;
 using vec_type=vec3<value_type>;
-const value_type INF=0x3f3f3f3f;//use extern
+
+const value_type INF=0x3f3f3f3f;
 const value_type esp=1e-9;
 const value_type pi=acos(-1);
-extern mt19937 seed;
-extern uniform_real_distribution<value_type>rnd;
+
 class ray
 {
 	public:
 		ray();
-		ray(const vec_type& a,const vec_type& b);
+		ray(const vec_type &a,const vec_type &b,const value_type c=0);
 		ray(const ray& r);
 		vec_type origin()const;
 		vec_type direction()const;
+		value_type time()const;
 		vec_type go(const value_type t)const;
 	private:
 		vec_type _a,_b;//_a:origin(光的起点) _b:direction(光的方向)
+		value_type _time;
 };
 
 class material;
@@ -32,7 +32,6 @@ struct hitInfo
 	value_type _t;//ray 中的系数t
 	vec_type _p,_n;//_p:相交点、撞击点 _n:_p点的表面法线
 	material *materialp;//材质
-	// hitInfo(const value_type a,const vec_type &p,const vec_type &n);
 };
 
 /*
@@ -56,7 +55,7 @@ class material
 		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const=0;
 	//protected:
 	public:
-		const vec_type random_unit_sphere()const;
+		
 		vec_type reflect(const vec_type &in,const vec_type &n)const;//反射
 		bool refract(const vec_type &InRay,const vec_type &n,value_type eta,vec_type &reflected)const;//折射
 		value_type schlick(const value_type cosine,const value_type RI)const;
@@ -136,7 +135,7 @@ class camera
 {
 	public:
 		camera(const vec_type &eye=vec_type(0.,0.,0.),const vec_type &start=vec_type(-2.,-1.,-1.),const vec_type &horizon=vec_type(4.,0.,0.),const vec_type &vertical=vec_type(0.,2.,0.));//默认参数
-		camera(const value_type aspect,const value_type vfov=90.,const value_type focus=1,const value_type aperture=0,const vec_type &lookfrom=vec_type(0.,0.,0.),const vec_type &lookat=vec_type(0.,0.,-1.),const vec_type &vup=vec_type(0.,1.,0.));
+		camera(const value_type aspect,const value_type vfov=90.,const vec_type &lookfrom=vec_type(0.,0.,0.),const vec_type &lookat=vec_type(0.,0.,-1.),const value_type focus=1,const value_type aperture=0,const value_type t1=0,const value_type t2=0,const vec_type &vup=vec_type(0.,1.,0.));
 		//vfov:相机在垂直方向上从屏幕顶端扫描到底部所岔开的视角角度;aspect:屏幕宽高比;lookfrom:眼睛位置;focus:焦距;aperture:光圈直径
 		const ray get_ray(const value_type u,const value_type v)const;
 		const ray get_ray(const vec2<value_type> &para)const;
@@ -148,9 +147,8 @@ class camera
 		const vec_type& v()const;
 		const vec_type& w()const;
 		const value_type& lens_r()const;
-		const vec_type random_unit_dick()const;
 	private:
 		vec_type _eye,_start,_horizon,_vertical,_u,_v,_w;//相机位置，开始位置（左下角），屏幕水平宽度，屏幕垂直高度，图像水平方向单位向量，图像竖直方向单位向量，世界竖直方向单位向量
-		value_type _len_radius;//光圈半径
+		value_type _len_radius,_time1,_time2;//光圈半径
 };
 

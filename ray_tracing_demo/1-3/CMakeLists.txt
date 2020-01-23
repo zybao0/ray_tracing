@@ -1,11 +1,11 @@
 cmake_minimum_required (VERSION 2.6)
 project(ray_tracing)
 
-include_directories(D:/project/ray_tracing/header)
-link_directories(D:/project/ray_tracing/lib)
+include_directories(/ray_tracing/header)
+link_directories(/ray_tracing/lib)
 
-include_directories(D:/project/BMPImage/build)
-link_directories(D:/project/BMPImage/build)
+include_directories(/BMPImage/build)
+link_directories(/BMPImage/build)
 
 SET(CMAKE_CXX_FLAGS "-O2 -std=c++17")
 
