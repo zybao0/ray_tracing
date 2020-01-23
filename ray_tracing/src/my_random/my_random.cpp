@@ -1,4 +1,3 @@
-#include<mutex>
 #include<ctime>
 #include<random>
 #include<my_random.h>
@@ -6,13 +5,11 @@ using namespace std;
 const value_type esp=1e-9;
 mt19937 seed(time(0));
 uniform_real_distribution<value_type>rnd;
-mutex mutex_;
 const value_type random_unit_figure()
 {
 	value_type t;
-	mutex_.lock();
 	t=rnd(seed);
-	mutex_.unlock();
+	return t;
 }
 const vec_type random_unit_dick()
 {
