@@ -1,11 +1,16 @@
 #include<objects/sphere.h>
 using namespace std;
-sphere::sphere(const vec_type &h,value_type r,material *ma):_heart(h),_radius(r),_materialp(ma){}
+sphere::sphere(const vec_type &h,value_type r,material *ma):_heart(h),_radius(r),_materialp(ma)
+{
+	_box=aabb(_heart-vec_type(_radius,_radius,_radius),_heart+vec_type(_radius,_radius,_radius));
+}
 sphere::~sphere(){if(_materialp)delete _materialp;}
 const value_type sphere::r()const{return _radius;}
 const vec_type& sphere::heart()const{return _heart;}
 bool sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
 {
+	// cout<<"hello"<<endl;
+	// cout<<_heart.x()<<" "<<_heart.y()<<" "<<_heart.z()<<endl;
 	vec_type trace=sight.origin()-_heart;
 	value_type a=dot(sight.direction(),sight.direction()),b=2.*dot(trace,sight.direction()),c=dot(trace,trace)-_radius*_radius,delt=b*b-4.*a*c;
 	if(delt>0)

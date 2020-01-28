@@ -25,6 +25,9 @@ class ray
 		value_type _time;
 };
 
+
+
+
 class material;
 
 struct hitInfo
@@ -91,6 +94,26 @@ class dielectric:public material
 };
 
 
+#define AUTO 0
+#define NONE 1
+#define BVH  2
+#define KDTREE 3
+
+class aabb//平行轴包围盒
+{
+	public:
+		aabb();
+		aabb(const vec_type &a,const vec_type &b);//任意对角坐标
+		aabb(const aabb &a,const aabb &b);//移动的物体
+		bool hit(const ray &sight,value_type tmin,value_type tmax)const;
+		const vec_type min()const;
+		const vec_type max()const;
+		const value_type area()const;
+	private:
+		vec_type _min,_max;//_min(_max):长方体8个顶点中坐标的x,y,z均最小(大)的点
+		value_type _area;//长方体表面积
+};
+
 /*
 而我们这个类完成的就是前半部分：计算光线相交点，或者说是交叉点，或者说是撞击点。
 所以讲基类命名为intersect
@@ -99,7 +122,7 @@ class dielectric:public material
 class intersect
 {
 	public:
-		intersect(){}
+		intersect();
 		// constexpr static value_type inf();
 		/*
 		@brief: 撞击函数，求取撞击点相关记录信息
@@ -109,7 +132,21 @@ class intersect
 		@retur,: 是否存在合法撞击点
 		*/
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const=0;
+		const aabb get_box()const;
 		virtual ~intersect();
+		const bool not_optimization()const;
+	protected:
+		bool _not_optimization;//有些物体（如无穷大平面）返回aabb没有意义，说以选择不优化
+		aabb _box;
+};
+
+class bvh_node:public intersect
+{
+	public:
+		bvh_node(intersect**world,const int n);
+		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+	private:
+		intersect *_left,*_right;
 };
 
 /*
@@ -123,13 +160,17 @@ class intersections:public intersect
 {
 	public:
 		intersections();
-		intersections(intersect** list,size_t n);
+		intersections(intersect** list,size_t n,int acceleration_type=AUTO);
 		virtual bool hit(const ray& sight,value_type t_min,value_type t_max,hitInfo& rec)const override;
 		// ~intersections();
 	private:
 		intersect** _list;//一个指针数组 指向每一个实体
-		size_t _size;
+		size_t _size,_num;//物体个数；可以优化的物体个数
+		bvh_node *bvh_root;
+		int _acceleration;
 };
+
+
 
 class camera
 {
