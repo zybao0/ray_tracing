@@ -20,32 +20,32 @@ value_type material::schlick(const value_type cosine,const value_type RI)const//
 	return r0+(1-r0)*pow(1-cosine,5);
 }
 
-lambertain::lambertain(const vec_type &a):_albedo(a){}
+lambertain::lambertain(texture *albedo){_albedo=albedo;}
 bool lambertain::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const
 {
 	vec_type target=info._p+info._n+random_unit_sphere();
 	scattered=ray(info._p,target-info._p,InRay.time());
-	attenuation=_albedo;
+	attenuation=_albedo->value(0,0,info._p);
 	return 1;
 }
 
-metal::metal(const vec_type &a,const value_type f):_albedo(a){_fuzz=(f>=0&&f<1?f:1);}
+metal::metal(texture *albedo,const value_type f){_albedo=albedo;_fuzz=(f>=0&&f<1?f:1);}
 bool metal::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const
 {
 	vec_type target=reflect(InRay.direction().ret_unitization(),info._n);
 	scattered=ray(info._p,target+_fuzz*random_unit_sphere(),InRay.time());
-	attenuation=_albedo;
+	attenuation=_albedo->value(0,0,info._p);
 	return 1;
 	//return dot(scattered.direction(),info._n);
 }
 
-dielectric::dielectric(value_type RI,const vec_type &a):_RI(RI),_albedo(a){}
+dielectric::dielectric(value_type RI,texture *albedo):_RI(RI){_albedo=albedo;}
 
 bool dielectric::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const
 {
 	vec_type outward_normal,refracted,reflected=reflect(InRay.direction(),info._n);
 	value_type eta,cos,refract_prob=1.;
-	attenuation=_albedo;
+	attenuation=_albedo->value(0,0,info._p);
 	if(dot(InRay.direction(),info._n)>0)
 	{
 		outward_normal=-info._n;

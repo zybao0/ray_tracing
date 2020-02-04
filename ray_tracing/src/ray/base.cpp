@@ -11,6 +11,7 @@ vec_type ray::direction()const{return _b;}
 value_type ray::time()const{return _time;}
 vec_type ray::go(const value_type t)const{return _a+t*_b;}
 
+intersect::intersect(){}
 const aabb intersect::get_box()const{return _box;}
 const bool intersect::not_optimization()const{return _not_optimization;}
 intersect::~intersect(){}

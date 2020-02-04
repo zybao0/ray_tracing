@@ -3,6 +3,11 @@
 #include<ray.h>
 #include<algorithm>
 
+aabb::aabb()
+{
+	_min=vec_type(0,0,0);
+	_max=vec_type(0,0,0);
+}
 aabb::aabb(const vec_type &a,const vec_type &b)
 {
 	_min=vec_type(std::min(a.x(),b.x())-esp,std::min(a.y(),b.y())-esp,std::min(a.z(),b.z())-esp);

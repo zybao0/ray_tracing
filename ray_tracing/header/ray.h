@@ -30,8 +30,8 @@ class ray
 class texture
 {
 	public:
-		virtual vec_type value(value_type u,value_type v,vec_type &p)const=0;//p就是衰减向量
-}
+		virtual vec_type value(value_type u,value_type v,const vec_type &p)const=0;//p为撞击点,返回衰减向量
+};
 
 
 
@@ -65,39 +65,36 @@ class material
 		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const=0;
 	//protected:
 	public:
-		
 		vec_type reflect(const vec_type &in,const vec_type &n)const;//反射
 		bool refract(const vec_type &InRay,const vec_type &n,value_type eta,vec_type &reflected)const;//折射
 		value_type schlick(const value_type cosine,const value_type RI)const;
+	protected:
+		texture *_albedo;//材质（衰弱三元组）
 };
 
 class lambertain:public material
 {
 	public:
-		lambertain(const vec_type &a);
+		lambertain(texture *albedo);
 		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const override;
-	protected:
-		vec_type _albedo;//衰弱三元组
 };
 
 class metal:public material
 {
 	public:
-		metal(const vec_type &a,const value_type f=0.);
+		metal(texture *albedo,const value_type f=0.);
 		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const override;
 	protected:
-		vec_type _albedo;//衰弱三元组
 		value_type _fuzz;
 };
 
 class dielectric:public material
 {
 	public:
-		dielectric(value_type RI,const vec_type &a=vec_type(1,1,1));
+		dielectric(value_type RI,texture *albedo);
 		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const override;
 	private:
 		value_type _RI;
-		vec_type _albedo;
 };
 
 
@@ -114,6 +111,7 @@ class dielectric:public material
 class aabb//平行轴包围盒
 {
 	public:
+		aabb();
 		aabb(const vec_type &a,const vec_type &b);//任意对角坐标
 		aabb(const aabb &a,const aabb &b);//移动的物体
 		bool hit(const ray &sight,value_type tmin,value_type tmax)const;
@@ -141,6 +139,7 @@ class intersect
 				rec->返回撞击点信息
 		@retur,: 是否存在合法撞击点
 		*/
+		intersect();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const=0;
 		const aabb get_box()const;
 		virtual ~intersect();
