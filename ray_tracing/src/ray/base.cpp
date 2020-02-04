@@ -4,14 +4,13 @@
 #include<my_random.h>
 
 ray::ray():_a{vec_type()},_b{vec_type()}{}
-ray::ray(const vec_type& a,const vec_type& b,const value_type c):_a(a),_b(b),_time(c){}
+ray::ray(const vec_type& a,const vec_type& b,const value_type c):_a(a),_b(b.ret_unitization()),_time(c){}
 ray::ray(const ray& r):_a(r._a),_b(r._b){}
 vec_type ray::origin()const{return _a;}
 vec_type ray::direction()const{return _b;}
 value_type ray::time()const{return _time;}
 vec_type ray::go(const value_type t)const{return _a+t*_b;}
 
-intersect::intersect(){}
 const aabb intersect::get_box()const{return _box;}
 const bool intersect::not_optimization()const{return _not_optimization;}
 intersect::~intersect(){}
@@ -21,7 +20,13 @@ intersections::intersections(intersect** list,size_t n,int acceleration_type):_l
 {
 	std::sort(list,list+n,intersect_cmp);
 	for(_num=0;_num<n;_num++)if(list[_num]->not_optimization()==0)break;
-	if(_acceleration==BVH||(_acceleration==AUTO&&_num>5&&_num<100))bvh_root=new bvh_node(list,_num);
+	if(_acceleration==BVH||(_acceleration==AUTO&&_num>5&&_num<100))root=new bvh_node(list,_num);
+	else if((_acceleration==KDTREE||(_acceleration==AUTO&&_num>=100))&&_num)
+	{
+		aabb bound=list[0]->get_box();
+		for(int i=1;i<_num;i++)bound=aabb(bound,list[i]->get_box());
+		root=new KD_tree_node(list,_num,(int)(8+1.3*log2(_num)),bound);
+	}
 }
 bool intersections::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
 {
@@ -37,9 +42,9 @@ bool intersections::hit(const ray &sight,value_type t_min,value_type t_max,hitIn
 			rec=t_rec;
 		}
 	}
-	else if(_acceleration==BVH||(_acceleration==AUTO&&_num>5&&_num<100))
+	else if(_acceleration==BVH||(_acceleration==AUTO&&_num>5&&_num<100)||_acceleration==KDTREE||(_acceleration==AUTO&&_num>=100))
 	{
-		if(bvh_root->hit(sight,t_min,t_max,t_rec))
+		if(root->hit(sight,t_min,t_max,t_rec))
 		{
 			hitSomething=1;
 			far=t_rec._t;//将上一次的最近撞击点作为视线可达最远处

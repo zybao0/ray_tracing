@@ -27,6 +27,13 @@ class ray
 
 
 
+class texture
+{
+	public:
+		virtual vec_type value(value_type u,value_type v,vec_type &p)const=0;//p就是衰减向量
+}
+
+
 
 class material;
 
@@ -94,15 +101,19 @@ class dielectric:public material
 };
 
 
+
 #define AUTO 0
 #define NONE 1
 #define BVH  2
-#define KDTREE 3
+#define KDTREE 3//加速方式
+
+#define AXIS_X 0
+#define AXIS_Y 1
+#define AXIS_Z 2
 
 class aabb//平行轴包围盒
 {
 	public:
-		aabb();
 		aabb(const vec_type &a,const vec_type &b);//任意对角坐标
 		aabb(const aabb &a,const aabb &b);//移动的物体
 		bool hit(const ray &sight,value_type tmin,value_type tmax)const;
@@ -122,7 +133,6 @@ class aabb//平行轴包围盒
 class intersect
 {
 	public:
-		intersect();
 		// constexpr static value_type inf();
 		/*
 		@brief: 撞击函数，求取撞击点相关记录信息
@@ -149,6 +159,28 @@ class bvh_node:public intersect
 		intersect *_left,*_right;
 };
 
+class KD_tree_node:public intersect
+{
+	public:
+		KD_tree_node(intersect**world,const int n,const int depth,aabb bound);
+		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+	private:
+		bool split;
+		int _split_axis;
+		value_type _split_pos;
+		intersect *_left,*_right;
+};
+
+class KD_tree_leaf:public intersect
+{
+	public:
+		KD_tree_leaf(intersect **world,const int n,aabb bound);
+		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+	private:
+		intersect **_list;
+		size_t _size;//叶节点物体数量
+};
+
 /*
 顾名思义，这个就是用于记录多个交叉点的一个表
 它包含一个二维指针，高维指的是一个有关于基类指针的数组，低维度就是指向基类——intersect的一个多态指针。
@@ -159,14 +191,13 @@ class bvh_node:public intersect
 class intersections:public intersect
 {
 	public:
-		intersections();
 		intersections(intersect** list,size_t n,int acceleration_type=AUTO);
 		virtual bool hit(const ray& sight,value_type t_min,value_type t_max,hitInfo& rec)const override;
 		// ~intersections();
 	private:
 		intersect** _list;//一个指针数组 指向每一个实体
 		size_t _size,_num;//物体个数；可以优化的物体个数
-		bvh_node *bvh_root;
+		intersect *root;
 		int _acceleration;
 };
 
