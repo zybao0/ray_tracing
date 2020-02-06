@@ -1,4 +1,3 @@
-//3D linear interpolation
 #include<ray.h>
 #include<all_objects.h>
 #include<cstdlib>

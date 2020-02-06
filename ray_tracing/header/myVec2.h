@@ -308,7 +308,8 @@ namespace gm
 	inline vec2<precision> vec2<T>::ret_unitization()const
 	{
 		norm_t div = normal();
-		return vec2<norm_t>{ (norm_t)this->_x / div, (norm_t)this->_y / div, (norm_t)this->_z / div };
+		//return vec2<norm_t>{ (norm_t)this->_x / div, (norm_t)this->_y / div, (norm_t)this->_z / div };
+		return vec2<norm_t>((norm_t)this->_x / div, (norm_t)this->_y / div);//change by Eabo
 	}
 
 	template<typename T, typename E>

@@ -1,4 +1,3 @@
-//linear interpolation 
 #include<ray.h>
 #include<cstdlib>
 #include<cstring>

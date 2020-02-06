@@ -1,4 +1,3 @@
-//save Image
 #include<ray.h>
 #include<cstdlib>
 #include<cstring>
@@ -8,7 +7,7 @@
 using namespace std;
 using namespace gm;
 string cmd_="rundll32.exe C:\\Windows\\System32\\shimgvw.dll,ImageView_Fullscreen ";//打开图片的命令
-string file_name="demo.bmp";//图片名称
+string file_name="hello.bmp";//图片名称
 int main()
 {
 	BMPImage bmpImage(400,200,32);

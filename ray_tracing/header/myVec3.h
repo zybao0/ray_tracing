@@ -329,7 +329,7 @@ namespace gm
 	inline vec3<precision> vec3<T>::ret_unitization()const
 	{
 		norm_t div = normal();
-		return vec3<norm_t>{ (norm_t)this->_x / div,(norm_t)this->_y / div,(norm_t)this->_z / div };
+		return vec3<norm_t>((norm_t)this->_x / div,(norm_t)this->_y / div,(norm_t)this->_z / div);
 	}
 
 	template<typename T, typename E>

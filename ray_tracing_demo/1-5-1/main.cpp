@@ -5,7 +5,7 @@
 #include<iostream>
 #include<direct.h>
 #include<BMPImage.h>
-#include<random>
+#include<my_random.h>
 #include<ctime>
 #include<thread>
 #include<mutex>
@@ -15,49 +15,50 @@ using namespace std;
 using namespace gm;
 string cmd_="rundll32.exe C:\\Windows\\System32\\shimgvw.dll,ImageView_Fullscreen ";//打开图片的命令
 string file_name="demo.bmp";//图片名称
-const int width=1600;//图像水平长度/像素
-const int hight=900;//图像竖直高度/像素
+const int width=400;//图像水平长度/像素
+const int hight=200;//图像竖直高度/像素
 const int times=200;//随机周围点的数量
 const int tnum=20;//线程数
-const int times_=5;//每次碰撞后反射次数
+const int times_=0;//每次碰撞后反射次数
 const int max_depth=50;//最多碰撞次数
+const value_type theta=90.;//相机在垂直方向上从屏幕顶端扫描到底部所岔开的视角角度
 BMPImage bmpImage(width,hight,32);
 intersect* world;
-camera cma(90,width/hight,vec_type(-1,1,1));
+camera cma(width/hight,theta,vec_type(-1,1,1));//眼睛（相机）
 
 void setpoint(BMPImage *bmp,int x,int y,vec_type RGB)//设置某个像素的RGB
 {
-	bmp->at<BGRA>(hight-x-1,width-y-1)=BGRA{RGB.b(),RGB.g(),RGB.r(),255};
-}
+	bmp->at<BGRA>(hight-x-1,width-y-1)=BGRA{(uchar)RGB.b(),(uchar)RGB.g(),(uchar)RGB.r(),255};
+}//保存图片
 
 vec_type lerp(const ray &sight,const intersect *world,int depth)
 {
-	hitInfo rec;
-	if(world->hit(sight,0.,INF,rec))
+	hitInfo rec;//撞击信息
+	if(world->hit(sight,0.,INF,rec))//如果光线打到了某个物体
 	{
-		ray scattered;
-		vec_type attenuation;
-		int t=times_/depth+1;
-		if(depth>max_depth)return vec_type(0,0,0);
+		ray scattered;//反射（折射）光线
+		vec_type attenuation;//颜色衰减
+		int t=times_/depth+1;//前面撞击时，对图片的影响比较大，应该多次取样
+		if(depth>max_depth)return vec_type(0,0,0);//超过的最大的递归次数
 		vec_type color(0,0,0);
 		for(int i=0;i<t;i++)
 		{
-			rec.materialp->scatter(sight,rec,attenuation,scattered);
-			color+=attenuation*lerp(scattered,world,depth+1);
+			rec.materialp->scatter(sight,rec,attenuation,scattered);//得到反射（折射）光线与颜色衰减
+			color+=attenuation*lerp(scattered,world,depth+1);//递归
 		}
 		return color/t;
 	}
-	else
+	else//否则返回天空颜色
 	{
 		vec_type dirUnit=sight.direction().ret_unitization();
 		value_type t=0.5*(dirUnit.y()+1.);
 		return (1.-t)*vec_type(1.,1.,1.)+t*vec_type(.5,.7,1.);
 	}
 }
-int x,y,tcnt;
-mutex mtx,mx;
+int x,y,tcnt;//x,y为当前处理的像素坐标，tcnt为当前线程数
+mutex mtx,mx;//线程锁
 condition_variable cv;
-vec_type btmap[hight][width];
+vec_type btmap[hight][width];//位图
 
 void render()
 {
@@ -70,14 +71,15 @@ void render()
 		mtx.lock();
 		int i=x,j=y;
 		y++;
-		if(y==width)y=0,x++;
+		if(y==width)y=0,x++;//对x,y拷贝，并处理下一个像素
 		mtx.unlock();
 
-		if(i==hight)break;
+		if(i==hight)break;//所有像素处理完毕，推出线程
 		vec_type color(0,0,0);
-		for(int k=0;k<times;k++)
+		for(int k=0;k<times;k++)//多次处理
 		{
-			vec2<value_type> para(value_type((double)j+rnd(seed))/width,value_type((double)i+rnd(seed))/hight);
+			//cout<<i<<" "<<j<<" "<<k<<endl;
+			vec2<value_type> para((j+random_unit_figure())/width,((double)i+random_unit_figure())/hight);
 			// vec2<value_type> para(value_type(j)/width,value_type(i)/hight);
 			color+=lerp(cma.get_ray(para),world,1);
 		}
@@ -88,7 +90,7 @@ void render()
 	mtx.lock();
 	tcnt--;
 	unique_lock<mutex>lock(mx);
-	if(!tcnt)cv.notify_all();
+	if(!tcnt)cv.notify_all();//当所有线程结束时唤醒main
 	mtx.unlock();
 }
 vector<intersect*>objects;
