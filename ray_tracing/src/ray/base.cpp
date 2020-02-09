@@ -1,15 +1,32 @@
 //基本类 包含光线，照相机与物体的基类
 #include<ray.h>
 #include<algorithm>
-#include<my_random.h>
 
-ray::ray():_a{vec_type()},_b{vec_type()}{}
+ray::ray():_a{vec_type()},_b{vec_type().ret_unitization()}{}
 ray::ray(const vec_type& a,const vec_type& b,const value_type c):_a(a),_b(b.ret_unitization()),_time(c){}
 ray::ray(const ray& r):_a(r._a),_b(r._b){}
 vec_type ray::origin()const{return _a;}
 vec_type ray::direction()const{return _b;}
 value_type ray::time()const{return _time;}
 vec_type ray::go(const value_type t)const{return _a+t*_b;}
+
+vec_type material::reflect(const vec_type &in,const vec_type &n)const{return in-2*dot(in,n)*n;}//反射
+bool material::refract(const vec_type &InRay,const vec_type &n,value_type eta,vec_type &reflected)const//折射
+{
+	vec_type unitIn=InRay.ret_unitization();
+	value_type cos1=dot(-unitIn,n),cos2=1.-eta*eta*(1-cos1*cos1);
+	if(cos2>0)
+	{
+		reflected=eta*unitIn+n*(eta*cos1-sqrt(cos2));
+		return 1;
+	}
+	return 0;//全反射
+}
+value_type material::schlick(const value_type cosine,const value_type RI)const//反射系数
+{
+	value_type r0=((1.-RI)/(1.+RI))*((1.-RI)/(1.+RI));
+	return r0+(1-r0)*pow(1-cosine,5);
+}
 
 intersect::intersect(){}
 const aabb intersect::get_box()const{return _box;}
@@ -20,7 +37,8 @@ intersect_cmp(intersect *a,intersect *b){return a->not_optimization()<b->not_opt
 intersections::intersections(intersect** list,size_t n,int acceleration_type):_list(list),_size(n),_acceleration(acceleration_type)
 {
 	std::sort(list,list+n,intersect_cmp);
-	for(_num=0;_num<n;_num++)if(list[_num]->not_optimization()==0)break;
+	for(_num=0;_num<n;_num++)if(list[_num]->not_optimization()==1)break;
+	// std::cout<<_num<<std::endl;
 	if(_acceleration==BVH||(_acceleration==AUTO&&_num>5&&_num<100))root=new bvh_node(list,_num);
 	else if((_acceleration==KDTREE||(_acceleration==AUTO&&_num>=100))&&_num)
 	{
@@ -75,7 +93,7 @@ camera::camera(const value_type aspect,const value_type vfov,const vec_type &loo
 const ray camera::get_ray(const value_type u,const value_type v)const
 {
 	vec_type rd=_len_radius*random_unit_dick();
-	value_type time=((_time2-_time1)<esp)?0:_time1+random_unit_figure()*(_time2-_time1);
+	value_type time=((_time2-_time1)<eps)?0:_time1+random_unit_figure()*(_time2-_time1);
 	return ray(_eye,_start+u*_horizon+v*_vertical-(_eye+_u*rd.x()+_v*rd.y()),time);
 }
 const ray camera::get_ray(const vec2<value_type> &para)const{return get_ray(para.u(),para.v());}

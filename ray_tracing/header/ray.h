@@ -1,13 +1,14 @@
 #pragma once
-#include"myVec2.h"
-#include"myVec3.h"
+#include"all_tools.h"
 using namespace gm;
 
 using value_type=precision;
 using vec_type=vec3<value_type>;
 
+const vec_type Vup=vec_type(0,1,0);//世界上方的方向
+
 const value_type INF=0x3f3f3f3f;
-const value_type esp=1e-9;
+const value_type eps=1e-9;
 const value_type pi=acos(-1);
 
 class ray
@@ -39,9 +40,9 @@ class material;
 
 struct hitInfo
 {
-	value_type _t;//ray 中的系数t
+	value_type _t,_u,_v;//ray 中的系数t(direction的t倍) 材质中的 x,y 
 	vec_type _p,_n;//_p:相交点、撞击点 _n:_p点的表面法线
-	material *materialp;//材质
+	material *materialp;//材料
 };
 
 /*
@@ -62,40 +63,17 @@ metal表面： 1.根据物理反射定律确定入射光对应的反射光的方
 class material
 {
 	public:
-		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const=0;
+		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered)const=0;
 	//protected:
 	public:
 		vec_type reflect(const vec_type &in,const vec_type &n)const;//反射
 		bool refract(const vec_type &InRay,const vec_type &n,value_type eta,vec_type &reflected)const;//折射
 		value_type schlick(const value_type cosine,const value_type RI)const;
 	protected:
-		texture *_albedo;//材质（衰弱三元组）
+		texture *_albedo,*_emit;//材质（衰弱三元组）发光
+		value_type _intensity;//光照强度
 };
 
-class lambertain:public material
-{
-	public:
-		lambertain(texture *albedo);
-		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const override;
-};
-
-class metal:public material
-{
-	public:
-		metal(texture *albedo,const value_type f=0.);
-		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const override;
-	protected:
-		value_type _fuzz;
-};
-
-class dielectric:public material
-{
-	public:
-		dielectric(value_type RI,texture *albedo);
-		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,ray &scattered)const override;
-	private:
-		value_type _RI;
-};
 
 
 
@@ -206,7 +184,7 @@ class camera
 {
 	public:
 		camera(const vec_type &eye=vec_type(0.,0.,0.),const vec_type &start=vec_type(-2.,-1.,-1.),const vec_type &horizon=vec_type(4.,0.,0.),const vec_type &vertical=vec_type(0.,2.,0.));//默认参数
-		camera(const value_type aspect,const value_type vfov=90.,const vec_type &lookfrom=vec_type(0.,0.,0.),const vec_type &lookat=vec_type(0.,0.,-1.),const value_type focus=1,const value_type aperture=0,const value_type t1=0,const value_type t2=0,const vec_type &vup=vec_type(0.,1.,0.));
+		camera(const value_type aspect,const value_type vfov=90.,const vec_type &lookfrom=vec_type(0.,0.,0.),const vec_type &lookat=vec_type(0.,0.,-1.),const value_type focus=1,const value_type aperture=0,const value_type t1=0,const value_type t2=0,const vec_type &vup=Vup);
 		//vfov:相机在垂直方向上从屏幕顶端扫描到底部所岔开的视角角度;aspect:屏幕宽高比;lookfrom:眼睛位置;focus:焦距;aperture:光圈直径
 		const ray get_ray(const value_type u,const value_type v)const;
 		const ray get_ray(const vec2<value_type> &para)const;

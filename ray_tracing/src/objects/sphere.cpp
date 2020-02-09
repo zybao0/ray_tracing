@@ -1,7 +1,9 @@
 #include<objects/sphere.h>
+#include<all_tools.h>
 using namespace std;
 sphere::sphere(const vec_type &h,value_type r,material *ma):_heart(h),_radius(r),_materialp(ma)
 {
+	_not_optimization=0;
 	_box=aabb(_heart-vec_type(_radius,_radius,_radius),_heart+vec_type(_radius,_radius,_radius));
 }
 sphere::~sphere(){if(_materialp)delete _materialp;}
@@ -20,16 +22,18 @@ bool sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec
 		value_type x=(-b-sqrt(delt))/(2.*a);
 		// cout<<_heart.x()<<" "<<_heart.y()<<" "<<_heart.z()<<endl;
 		// cout<<"x:"<<x<<" "<<t_min<<" "<<t_max<<endl;
-		if(x+esp<t_max&&x>t_min+esp)
+		if(x+eps<t_max&&x>t_min+eps)
 		{
 			rec._t=x;rec._p=sight.go(rec._t);rec._n=(rec._p-_heart)/_radius;
+			get_sphere_uv((rec._p-_heart)/_radius,rec._u,rec._v,Vup);
 			return 1;
 		}
 		x=(-b+sqrt(delt))/(2.*a);
 		// cout<<"x:"<<x<<" "<<t_min<<" "<<t_max<<endl;
-		if(x+esp<t_max&&x>t_min+esp)
+		if(x+eps<t_max&&x>t_min+eps)
 		{
 			rec._t=x;rec._p=sight.go(rec._t);rec._n=(rec._p-_heart)/_radius;
+			get_sphere_uv((rec._p-_heart)/_radius,rec._u,rec._v,Vup);
 			return 1;
 		}
 	}

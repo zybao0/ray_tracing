@@ -1,4 +1,3 @@
-#include<my_random.h>
 #include<texture/noise_texture.h>
 using namespace std;
 noise_texture::noise_texture(const vec_type &color,const value_type scale):_color(color),_scale(scale){}

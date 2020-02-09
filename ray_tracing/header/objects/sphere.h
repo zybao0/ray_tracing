@@ -1,5 +1,6 @@
 #pragma once
 #include"../ray.h"
+#include"../all_tools.h"
 using namespace gm;
 class sphere:public intersect
 {

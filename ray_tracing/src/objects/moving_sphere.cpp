@@ -12,15 +12,17 @@ bool moving_sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitIn
 	{
 		rec.materialp=_materialp;
 		value_type x=(-b-sqrt(delt))/(2.*a);
-		if(x+esp<t_max&&x>t_min+esp)
+		if(x+eps<t_max&&x>t_min+eps)
 		{
 			rec._t=x;rec._p=sight.go(rec._t);rec._n=(rec._p-heart(sight.time()))/_radius;
+			get_sphere_uv((rec._p-heart(sight.time()))/_radius,rec._u,rec._v,Vup);
 			return 1;
 		}
 		x=(-b+sqrt(delt))/(2.*a);
-		if(x+esp<t_max&&x>t_min+esp)
+		if(x+eps<t_max&&x>t_min+eps)
 		{
 			rec._t=x;rec._p=sight.go(rec._t);rec._n=(rec._p-heart(sight.time()))/_radius;
+			get_sphere_uv((rec._p-heart(sight.time()))/_radius,rec._u,rec._v,Vup);
 			return 1;
 		}
 	}

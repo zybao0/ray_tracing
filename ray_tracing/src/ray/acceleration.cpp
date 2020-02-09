@@ -5,13 +5,13 @@
 
 aabb::aabb()
 {
-	_min=vec_type(0,0,0);
-	_max=vec_type(0,0,0);
+	_min=vec_type(-INF,-INF,-INF);
+	_max=vec_type(INF,INF,INF);
 }
 aabb::aabb(const vec_type &a,const vec_type &b)
 {
-	_min=vec_type(std::min(a.x(),b.x())-esp,std::min(a.y(),b.y())-esp,std::min(a.z(),b.z())-esp);
-	_max=vec_type(std::max(a.x(),b.x())+esp,std::max(a.y(),b.y())+esp,std::max(a.z(),b.z())+esp);
+	_min=vec_type(std::min(a.x(),b.x())-eps,std::min(a.y(),b.y())-eps,std::min(a.z(),b.z())-eps);
+	_max=vec_type(std::max(a.x(),b.x())+eps,std::max(a.y(),b.y())+eps,std::max(a.z(),b.z())+eps);
 	vec_type len=_max-_min;
 	_area=(len.x()*len.y()+len.y()*len.z()+len.x()*len.z())*2;
 	// std::cout<<"max:"<<_min.x()<<" "<<_min.y()<<" "<<_min.z()<<std::endl;
@@ -19,8 +19,8 @@ aabb::aabb(const vec_type &a,const vec_type &b)
 }
 aabb::aabb(const aabb &a,const aabb &b)
 {
-	_min=vec_type(std::min(a.min().x(),b.min().x())-esp,std::min(a.min().y(),b.min().y())-esp,std::min(a.min().z(),b.min().z())-esp);
-	_max=vec_type(std::max(a.max().x(),b.max().x())+esp,std::max(a.max().y(),b.max().y())+esp,std::max(a.max().z(),b.max().z())+esp);
+	_min=vec_type(std::min(a.min().x(),b.min().x())-eps,std::min(a.min().y(),b.min().y())-eps,std::min(a.min().z(),b.min().z())-eps);
+	_max=vec_type(std::max(a.max().x(),b.max().x())+eps,std::max(a.max().y(),b.max().y())+eps,std::max(a.max().z(),b.max().z())+eps);
 	vec_type len=_max-_min;
 	_area=(len.x()*len.y()+len.y()*len.z()+len.x()*len.z())*2;
 	// std::cout<<"max:"<<_min.x()<<" "<<_min.y()<<" "<<_min.z()<<std::endl;
@@ -60,8 +60,8 @@ int get_max_asix(intersect **world,const int n)//获得极差最大的那根轴
 		_min=vec_type(std::min(tmp.min().x(),_min.x()),std::min(tmp.min().y(),_min.y()),std::min(tmp.min().z(),_min.z()));
 		_max=vec_type(std::max(tmp.max().x(),_max.x()),std::max(tmp.max().y(),_max.y()),std::max(tmp.max().z(),_max.z()));
 	}
-	if((_max.x()-_min.x()+esp>_max.y()-_min.y())&&(_max.x()-_min.x()+esp>_max.z()-_min.z()))return AXIS_X;
-	else if((_max.y()-_min.y()+esp>_max.x()-_min.x())&&(_max.y()-_min.y()+esp>_max.z()-_min.z()))return AXIS_Y;
+	if((_max.x()-_min.x()+eps>_max.y()-_min.y())&&(_max.x()-_min.x()+eps>_max.z()-_min.z()))return AXIS_X;
+	else if((_max.y()-_min.y()+eps>_max.x()-_min.x())&&(_max.y()-_min.y()+eps>_max.z()-_min.z()))return AXIS_Y;
 	else return AXIS_Z;
 }
 vec3<int> sort_asix(aabb box)//对每根轴按极差从小到大排序
@@ -127,7 +127,7 @@ KD_tree_node::KD_tree_node(intersect**world,const int n,const int depth,aabb bou
 	for(int i=0;i<n;i++)
 	{
 		bool flag=1;
-		for(int j=0;flag&&j<3;j++)if(bound.min()[j]>world[i]->get_box().max()[j]+esp||bound.max()[j]<world[i]->get_box().min()[j]-esp)flag=0;
+		for(int j=0;flag&&j<3;j++)if(bound.min()[j]>world[i]->get_box().max()[j]+eps||bound.max()[j]<world[i]->get_box().min()[j]-eps)flag=0;
 		if(!flag)continue;
 		objects[num++]=world[i];
 	}
@@ -173,7 +173,7 @@ KD_tree_node::KD_tree_node(intersect**world,const int n,const int depth,aabb bou
 				tmp_min[f[i]]=tmp_max[f[i]]=flag?bound_list[f[i]*2][p]:bound_list[f[i]*2+1][q];
 				aabb l_box(bound.min(),tmp_max),r_box(tmp_min,bound.max());
 				//仅当两个待划分节点中的任意一个为空节点时增加一个奖励项 
-				value_type now_cost=(p==0&&(bound_list[f[i]*2][p]>bound.min()[f[i]]+esp)?(bound.max()[f[i]]-bound_list[f[i]*2][p])/(bound.max()[f[i]]-bound.min()[f[i]]):1.)*(size_l*l_box.area()+size_r*r_box.area());
+				value_type now_cost=(p==0&&(bound_list[f[i]*2][p]>bound.min()[f[i]]+eps)?(bound.max()[f[i]]-bound_list[f[i]*2][p])/(bound.max()[f[i]]-bound.min()[f[i]]):1.)*(size_l*l_box.area()+size_r*r_box.area());
 				if(now_cost<min_cost)
 				{
 					min_cost=now_cost;
@@ -188,7 +188,7 @@ KD_tree_node::KD_tree_node(intersect**world,const int n,const int depth,aabb bou
 				vec_type tmp_min=bound.min(),tmp_max=bound.max();
 				tmp_min[f[i]]=tmp_max[f[i]]=bound_list[f[i]*2+1][q];
 				aabb l_box(bound.min(),tmp_max),r_box(tmp_min,bound.max());
-				value_type now_cost=(q==num-1&&(bound_list[f[i]*2+1][1]<bound.min()[f[i]]-esp)?(bound_list[f[i]*2+1][q]-bound.min()[f[i]])/(bound.max()[f[i]]-bound.min()[f[i]]):1.)*(size_l*l_box.area()+size_r*r_box.area());
+				value_type now_cost=(q==num-1&&(bound_list[f[i]*2+1][1]<bound.min()[f[i]]-eps)?(bound_list[f[i]*2+1][q]-bound.min()[f[i]])/(bound.max()[f[i]]-bound.min()[f[i]]):1.)*(size_l*l_box.area()+size_r*r_box.area());
 				if(now_cost<min_cost)
 				{
 					min_cost=now_cost;
@@ -198,8 +198,8 @@ KD_tree_node::KD_tree_node(intersect**world,const int n,const int depth,aabb bou
 				size_r--;
 				q++;
 			}
-			//if(_split_pos>bound_list[f[i]*2][0]+esp&&_split_pos<bound_list[f[i]*2+1][num-1]-esp)
-			if(_split_pos>bound.min()[_split_axis]+esp&&_split_pos<bound.max()[_split_axis]-esp)
+			//if(_split_pos>bound_list[f[i]*2][0]+eps&&_split_pos<bound_list[f[i]*2+1][num-1]-eps)
+			if(_split_pos>bound.min()[_split_axis]+eps&&_split_pos<bound.max()[_split_axis]-eps)
 			{
 
 				split=1;
