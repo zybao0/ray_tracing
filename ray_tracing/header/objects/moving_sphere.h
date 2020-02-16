@@ -6,7 +6,7 @@ class moving_sphere:public intersect
 	public:
 		moving_sphere(){};
 		moving_sphere(const vec_type &h1,const vec_type &h2,value_type t1,value_type t2,value_type r,material *ma);
-		~moving_sphere();
+		// ~moving_sphere();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
 		const value_type r()const;
 		const vec_type heart(const value_type t)const;

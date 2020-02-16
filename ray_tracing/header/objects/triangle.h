@@ -6,7 +6,7 @@ class triangle:public intersect
 	public:
 		triangle();
 		triangle(const vec_type &p,const vec_type &edge1,const vec_type &edge2,material *ma);
-		~triangle();
+		// ~triangle();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
 		const vec_type& n()const;
 	private:

@@ -4,6 +4,7 @@ using namespace gm;
 
 using value_type=precision;
 using vec_type=vec3<value_type>;
+using mat_type=matrix<value_type>;
 
 const vec_type Vup=vec_type(0,1,0);//世界上方的方向
 
@@ -93,9 +94,9 @@ class aabb//平行轴包围盒
 		aabb(const vec_type &a,const vec_type &b);//任意对角坐标
 		aabb(const aabb &a,const aabb &b);//移动的物体
 		bool hit(const ray &sight,value_type tmin,value_type tmax)const;
-		const vec_type min()const;
-		const vec_type max()const;
-		const value_type area()const;
+		const vec_type& min()const;
+		const vec_type& max()const;
+		const value_type& area()const;
 	private:
 		vec_type _min,_max;//_min(_max):长方体8个顶点中坐标的x,y,z均最小(大)的点
 		value_type _area;//长方体表面积

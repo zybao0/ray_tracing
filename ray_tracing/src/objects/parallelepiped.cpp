@@ -76,6 +76,8 @@ parallelepiped::parallelepiped(const vec_type &p,const vec_type &edge1,const vec
 }
 bool parallelepiped::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
 {
+	// cout<<sight.origin().x()<<" "<<sight.origin().y()<<" "<<sight.origin().z()<<endl;
+	// cout<<sight.direction().x()<<" "<<sight.direction().y()<<" "<<sight.direction().z()<<endl;
 	hitInfo t_rec;
 	bool hitSomething=0;
 	value_type far=t_max;//刚开始可以看到无限远

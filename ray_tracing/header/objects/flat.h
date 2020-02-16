@@ -6,7 +6,7 @@ class flat:public intersect
 	public:
 		flat();
 		flat(const vec_type &p,const vec_type &n,material *ma);
-		~flat();
+		// ~flat();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
 		const vec_type& n()const;
 	private:

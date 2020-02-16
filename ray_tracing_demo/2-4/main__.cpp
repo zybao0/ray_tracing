@@ -18,16 +18,14 @@ using namespace std;
 using namespace gm;
 string cmd_="rundll32.exe C:\\Windows\\System32\\shimgvw.dll,ImageView_Fullscreen ";//打开图片的命令
 string file_name="demo.bmp";//图片名称
-const int width=200;//图像水平长度/像素
+const int width=400;//图像水平长度/像素
 const int height=200;//图像竖直高度/像素
-const int times=200;//随机周围点的数量
+const int times=50;//随机周围点的数量
 const int tnum=20;//线程数
 const int times_=0;//每次碰撞后反射次数
-const int max_depth=50;//最多碰撞次数
+const int max_depth=5;//最多碰撞次数
 const int save_time=10;//每次保存图片时的间隔/分钟
-const value_type theta=120.;//相机在垂直方向上从屏幕顶端扫描到底部所岔开的视角角度
-const value_type min_attenuation=1e-4;//当衰减程度小于这个值时直接返回
-const bool heuristic_deep=0;
+const value_type theta=90.;//相机在垂直方向上从屏幕顶端扫描到底部所岔开的视角角度
 
 BMPImage bmpImage(width,height,32);
 intersect* world;
@@ -40,39 +38,6 @@ void setpoint(BMPImage *bmp,int x,int y,vec_type RGB)//设置某个像素的RGB
 	bmp->at<BGRA>(height-x-1,width-y-1)=BGRA{(uchar)RGB.b(),(uchar)RGB.g(),(uchar)RGB.r(),255};
 }//保存图片
 
-vec_type lerp(const ray &sight,const intersect *world,int depth,vec_type attenuation_now)
-{
-	if(depth>max_depth||(attenuation_now.r()<min_attenuation&&attenuation_now.g()<min_attenuation&&attenuation_now.g()<min_attenuation))return vec_type(0,0,0);//超过的最大的递归次数
-	hitInfo rec;//撞击信息
-	if(world->hit(sight,0.,INF,rec))//如果光线打到了某个物体
-	{
-		// cout<<"hhhhhhhhhhhhhhhhhhhhhhhhh"<<endl;
-		// cout<<rec._t<<endl;
-		// cout<<sight.origin().x()<<" "<<sight.origin().y()<<" "<<sight.origin().z()<<endl;
-		// cout<<sight.direction().x()<<" "<<sight.direction().y()<<" "<<sight.direction().z()<<endl;
-		// cout<<rec._p.x()<<" "<<rec._p.y()<<" "<<rec._p.y()<<endl;
-		ray scattered;//反射（折射）光线
-		vec_type attenuation(0,0,0),emit(0,0,0);//颜色衰减
-		int t=times_/depth+1;//前面撞击时，对图片的影响比较大，应该多次取样
-		vec_type color(0,0,0);
-		for(int i=0;i<t;i++)
-		{
-			rec.materialp->scatter(sight,rec,attenuation,emit,scattered);//得到反射（折射）光线与颜色衰减
-			// mat_type(emit).echo();
-			// mat_type(attenuation).echo();
-			if(attenuation.r()<eps&&attenuation.g()<eps&&attenuation.g()<eps)color+=emit;
-			else color+=emit+attenuation*lerp(scattered,world,depth+1,attenuation*attenuation_now);//递归
-		}
-		return color/t;
-	}
-	else//否则返回天空颜色
-	{
-		// return vec_type(0,0,0);
-		vec_type dirUnit=sight.direction().ret_unitization();
-		value_type t=0.5*(dirUnit.y()+1.);
-		return (1.-t)*vec_type(1.,1.,1.)+t*vec_type(.5,.7,1.);
-	}
-}
 vec_type lerp(const ray &sight,const intersect *world,int depth)
 {
 	if(depth>max_depth)return vec_type(0,0,0);//超过的最大的递归次数
@@ -135,7 +100,7 @@ void render()
 			//cout<<i<<" "<<j<<" "<<k<<endl;
 			vec2<value_type> para(((value_type)j+random_unit_figure())/width,((value_type)i+random_unit_figure())/height);
 			// vec2<value_type> para(value_type(j)/width,value_type(i)/height);
-			color+=heuristic_deep?lerp(cma.get_ray(para),world,1,vec_type(1,1,1)):lerp(cma.get_ray(para),world,1);
+			color+=lerp(cma.get_ray(para),world,1);
 			// cout<<(double)color.r()*255<<endl;
 		}
 		color=vec_type(sqrt(color.r()/times),sqrt(color.g()/times),sqrt(color.b()/times));
@@ -219,7 +184,7 @@ int main()
 	
 	objects.push_back(new rectangle(vec_type(200,555-eps,200),vec_type(355,555-eps,355),vec_type(0,0,200),new lambertain(new constant_texture(vec_type(1,1,1)),new constant_texture(vec_type(5,5,5)),1)));
 	objects.push_back(new cuboid(vec_type(0,0,0),vec_type(555,0,555),vec_type(0,0,555),555,new lambertain(new constant_texture(vec_type(1,.5,.5))),new lambertain(new constant_texture(vec_type(.5,.1,.5))),new lambertain(new constant_texture(vec_type(.5,.5,1)))));
-	objects.push_back(new transform(vec_type(0,0,0),mat_type(vector<vector<double>>{vector<double>{0.7071,-0.3535,0.6123},vector<double>{0,0.8660,0.5},vector<double>{-0.7071,-0.3535,0.6123}}),vec_type(130,200,165),cube1));
+	objects.push_back(new transform(vec_type(0,0,0),mat_type(vector<vector<double>>{vector<double>{0.7071,-0.3535,0.6123},vector<double>{0,0.8660,0.5},vector<double>{-0.7071,-0.3535,0.6123}}),vec_type(130,200,65),cube1));
 	objects.push_back(new transform(vec_type(0,0,0),mat_type(vector<vector<double>>{vector<double>{0.8137,-0.2961,-0.5},vector<double>{0.3420,0.9396,0},vector<double>{0.4698,-0.1710,0.8660}}),vec_type(256,60,295),cube2));
 	// objects.push_back(new transform(vec_type(0,0,0),mat_type(vector<vector<double>>{vector<double>{1,0,0},vector<double>{0,1,0},vector<double>{0,0,1}}),vec_type(265,200,465),cube1));
 	// objects.push_back(new transform(vec_type(0,0,0),mat_type(vector<vector<double>>{vector<double>{1,0,0},vector<double>{0,1,0},vector<double>{0,0,1}}),vec_type(30,60,365),cube2));

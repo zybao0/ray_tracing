@@ -1,7 +1,7 @@
 #include<objects/moving_sphere.h>
 using namespace std;
 moving_sphere::moving_sphere(const vec_type &h1,const vec_type &h2,value_type t1,value_type t2,value_type r,material *ma):_heart1(h1),_heart2(h2),_time1(t1),_time2(t2),_radius(r),_materialp(ma){}
-moving_sphere::~moving_sphere(){if(_materialp)delete _materialp;}
+// moving_sphere::~moving_sphere(){if(_materialp)delete _materialp;}
 const value_type moving_sphere::r()const{return _radius;}
 const vec_type moving_sphere::heart(const value_type t)const{return _heart1+((t-_time1)/(_time2-_time1))*(_heart2-_heart1);}
 bool moving_sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const

@@ -8,11 +8,11 @@ flat::flat(const vec_type &p,const vec_type &n,material *ma):_heart(p),_material
 	_n=n.ret_unitization();
 	// _box=aabb(vec_type(INF,INF,INF),vec_type(INF,INF,INF));
 }
-flat::~flat(){if(_materialp)delete _materialp;}
+// flat::~flat(){if(_materialp)delete _materialp;}
 const vec_type& flat::n()const{return _n;}
 bool flat::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
 {
-		
+	// cout<<"hit_flat"<<endl;
 	value_type d=dot(sight.direction(),_n);
 	if(d>-eps&&d<eps)return 0;//光线的方向向量与平面的法向量垂直，无焦点
 	value_type x=dot(_heart-sight.origin(),_n)/dot(sight.direction(),_n);

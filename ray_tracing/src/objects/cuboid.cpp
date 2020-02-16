@@ -5,6 +5,7 @@ using namespace std;
 cuboid::cuboid(){}
 cuboid::cuboid(const vec_type &p1,const vec_type &p2,const vec_type &dirict,const value_type height,material *ma)
 {
+	// cout<<"1"<<endl;
 	value_type t=dot(p2-p1,dirict)/dirict.squar();
 	vec_type edge1=t*dirict,edge2=p2-(p1+edge1),_n=cross(edge1,edge2).ret_unitization(),edge3=_n*height;
 
@@ -27,13 +28,18 @@ cuboid::cuboid(const vec_type &p1,const vec_type &p2,const vec_type &dirict,cons
 	if(dot(_list[5].n(),edge2)<0)_list[5].flit_n();
 
 	_box=(aabb(aabb(p1,p1+edge1+edge2+edge3),aabb(p1+edge3,p1+edge1+edge2)),aabb(aabb(p1+edge2,p1+edge1+edge3),aabb(p1+edge1,p1+edge2+edge3)));
+	// cout<<_box.min().x()<<" "<<_box.min().y()<<" "<<_box.min().z()<<endl;
 	// cout<<_edge1.x()<<" "<<_edge1.y()<<" "<<_edge1.z()<<endl;
 	// cout<<_edge2.x()<<" "<<_edge2.y()<<" "<<_edge2.z()<<endl;
 }
 cuboid::cuboid(const vec_type &p1,const vec_type &p2,const vec_type &dirict,const value_type height,material *ma1,material *ma2,material *ma3)
 {
+	// cout<<"2"<<endl;
 	value_type t=dot(p2-p1,dirict)/dirict.squar();
 	vec_type edge1=t*dirict,edge2=p2-(p1+edge1),_n=cross(edge1,edge2).ret_unitization(),edge3=_n*height;
+
+	// cout<<edge1.x()<<" "<<edge1.y()<<" "<<edge1.z()<<endl;
+	// cout<<edge2.x()<<" "<<edge2.y()<<" "<<edge2.z()<<endl;
 
 	_list[0]=parallelogram(p1,edge1,edge2,ma1);
 	if(dot(_list[0].n(),edge3)>0)_list[0].flit_n();
@@ -52,11 +58,16 @@ cuboid::cuboid(const vec_type &p1,const vec_type &p2,const vec_type &dirict,cons
 
 	_list[5]=parallelogram(p1+edge2,edge3,edge1,ma3);
 	if(dot(_list[5].n(),edge2)<0)_list[5].flit_n();
+
+	_box=(aabb(aabb(p1,p1+edge1+edge2+edge3),aabb(p1+edge3,p1+edge1+edge2)),aabb(aabb(p1+edge2,p1+edge1+edge3),aabb(p1+edge1,p1+edge2+edge3)));
+	// cout<<_box.min().x()<<" "<<_box.min().y()<<" "<<_box.min().z()<<endl;
+	// cout<<_box.max().x()<<" "<<_box.max().y()<<" "<<_box.max().z()<<endl;
 	// cout<<_edge1.x()<<" "<<_edge1.y()<<" "<<_edge1.z()<<endl;
 	// cout<<_edge2.x()<<" "<<_edge2.y()<<" "<<_edge2.z()<<endl;
 }
 cuboid::cuboid(const vec_type &p1,const vec_type &p2,const vec_type &dirict,const value_type height,material *ma1,material *ma1_,material *ma2,material *ma2_,material *ma3,material *ma3_)
 {
+	// cout<<"3"<<endl;
 	value_type t=dot(p2-p1,dirict)/dirict.squar();
 	vec_type edge1=t*dirict,edge2=p2-(p1+edge1),_n=cross(edge1,edge2).ret_unitization(),edge3=_n*height;
 
@@ -79,17 +90,6 @@ cuboid::cuboid(const vec_type &p1,const vec_type &p2,const vec_type &dirict,cons
 	if(dot(_list[5].n(),edge2)<0)_list[5].flit_n();
 	// cout<<_edge1.x()<<" "<<_edge1.y()<<" "<<_edge1.z()<<endl;
 	// cout<<_edge2.x()<<" "<<_edge2.y()<<" "<<_edge2.z()<<endl;
+
+	_box=(aabb(aabb(p1,p1+edge1+edge2+edge3),aabb(p1+edge3,p1+edge1+edge2)),aabb(aabb(p1+edge2,p1+edge1+edge3),aabb(p1+edge1,p1+edge2+edge3)));
 }
-// bool cuboid::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
-// {
-// 	hitInfo t_rec;
-// 	bool hitSomething=0;
-// 	value_type far=t_max;//刚开始可以看到无限远
-// 	for(int i=0;i<6;i++)if(_list[i].hit(sight,t_min,far,t_rec))
-// 	{
-// 		hitSomething=1;
-// 		far=t_rec._t;//将上一次的最近撞击点作为视线可达最远处
-// 		rec=t_rec;
-// 	}
-// 	return hitSomething;
-// }

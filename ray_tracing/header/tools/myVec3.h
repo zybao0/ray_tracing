@@ -4,10 +4,10 @@ namespace gm
 {
 	template<typename T>class vec3
 	{
-	public:
-		using value_type=T;
-		using norm_t=precision;
-	public:
+		public:
+			using value_type=T;
+			using norm_t=precision;
+		public:
 			template<typename E>
 			vec3(const vec3<E>& vec);	  //static_cast
 			vec3(const T e1 = T(), const T e2 = T(), const T e3 = T())noexcept;
@@ -73,7 +73,7 @@ namespace gm
 			inline bool isnull()const;
 		private:
 			T _x, _y, _z;
-		};
+	};
 
 //constructor functions
 

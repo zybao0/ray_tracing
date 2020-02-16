@@ -8,7 +8,8 @@ dielectric::dielectric(value_type RI,texture *albedo):_RI(RI)
 dielectric::dielectric(value_type RI,texture *albedo,texture *emit,value_type intensity):_RI(RI)
 {
 	_albedo=albedo;
-	_emit=emit;
+	if(emit)_emit=emit;
+	else _emit=albedo;
 	_intensity=intensity;
 }
 bool dielectric::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered)const

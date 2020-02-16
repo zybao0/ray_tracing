@@ -10,7 +10,8 @@ metal::metal(texture *albedo,texture *emit,value_type intensity,const value_type
 {
 	_albedo=albedo;
 	_fuzz=(f>=0&&f<1?f:1);
-	_emit=emit;
+	if(emit)_emit=emit;
+	else _emit=albedo;
 	_intensity=intensity;
 }
 bool metal::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered)const

@@ -8,7 +8,7 @@ triangle::triangle(const vec_type &p,const vec_type &edge1,const vec_type &edge2
 	_n=cross(edge1,edge2).ret_unitization();
 	_box=aabb(aabb(_heart,_heart+_edge1),aabb(_heart,_heart+_edge2));
 }
-triangle::~triangle(){if(_materialp)delete _materialp;}
+// triangle::~triangle(){if(_materialp)delete _materialp;}
 const vec_type& triangle::n()const{return _n;}
 bool triangle::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
 {

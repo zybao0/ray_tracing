@@ -44,9 +44,9 @@ bool aabb::hit(const ray &sight,value_type tmin,value_type tmax)const
 	// std::cout<<"hit"<<std::endl<<std::endl;
 	return 1;
 }
-const vec_type aabb::min()const{return _min;}
-const vec_type aabb::max()const{return _max;}
-const value_type aabb::area()const{return _area;}
+const vec_type& aabb::min()const{return _min;}
+const vec_type& aabb::max()const{return _max;}
+const value_type& aabb::area()const{return _area;}
 
 bool cmpx(intersect *a,intersect *b){return a->get_box().min().x()<b->get_box().min().x();}
 bool cmpy(intersect *a,intersect *b){return a->get_box().min().y()<b->get_box().min().y();}

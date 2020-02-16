@@ -6,11 +6,12 @@ sphere::sphere(const vec_type &h,value_type r,material *ma):_heart(h),_radius(r)
 	_not_optimization=0;
 	_box=aabb(_heart-vec_type(_radius,_radius,_radius),_heart+vec_type(_radius,_radius,_radius));
 }
-sphere::~sphere(){if(_materialp)delete _materialp;}
+// sphere::~sphere(){if(_materialp)delete _materialp;}
 const value_type sphere::r()const{return _radius;}
 const vec_type& sphere::heart()const{return _heart;}
 bool sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const
 {
+	// cout<<"hit_sphere"<<endl;
 	// cout<<_heart.x()<<" "<<_heart.y()<<" "<<_heart.z()<<endl;
 	// cout<<sight.origin().x()<<" "<<sight.origin().y()<<" "<<sight.origin().z()<<endl;
 	// cout<<sight.direction().x()<<" "<<sight.direction().y()<<" "<<sight.direction().z()<<endl;

@@ -6,4 +6,5 @@
 #include"objects/parallelogram.h" 
 #include"objects/rectangle.h" 
 #include"objects/sphere.h" 
+#include"objects/transform.h" 
 #include"objects/triangle.h" 
