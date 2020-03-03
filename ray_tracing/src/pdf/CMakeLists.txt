@@ -1,0 +1,7 @@
+cmake_minimum_required (VERSION 2.6)
+include_directories(${PROJECT_BINARY_DIR}/header)
+target_link_libraries(ray)
+SET(CMAKE_CXX_FLAGS "-O2 -std=c++17")
+SET(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
+AUX_SOURCE_DIRECTORY(. DIR_LIB_SRCS)
+add_library(pdf ${DIR_LIB_SRCS})

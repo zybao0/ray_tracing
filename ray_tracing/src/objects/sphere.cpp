@@ -40,3 +40,10 @@ bool sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec
 	}
 	return 0;
 }
+vec_type sphere::random_poin()const
+{
+	value_type u=2*random_unit_figure()-1.0,v=2*random_unit_figure()-1.0,r=u*u+v*v;
+	while(r>=1)u=2*random_unit_figure()-1.0,v=2*random_unit_figure()-1.0,r=u*u+v*v;
+	return vec_type(2*u*sqrt(1-r),2*v*sqrt(1-r),1-2*r)+_heart;
+}
+value_type sphere::size()const{return 4*pi*_radius*_radius;}

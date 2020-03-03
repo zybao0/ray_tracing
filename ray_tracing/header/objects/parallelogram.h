@@ -8,6 +8,8 @@ class parallelogram:public intersect
 		parallelogram(const vec_type &p,const vec_type &edge1,const vec_type &edge2,material *ma);
 		// ~parallelogram();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+		virtual vec_type random_poin()const override;
+		virtual value_type size()const override;
 		const vec_type& n()const;
 		const void flit_n();
 	protected:

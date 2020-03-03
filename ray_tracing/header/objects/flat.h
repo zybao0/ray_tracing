@@ -8,6 +8,7 @@ class flat:public intersect
 		flat(const vec_type &p,const vec_type &n,material *ma);
 		// ~flat();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+		virtual vec_type random_poin()const override;
 		const vec_type& n()const;
 	private:
 		vec_type _heart,_n;//平面上的一点 法向量

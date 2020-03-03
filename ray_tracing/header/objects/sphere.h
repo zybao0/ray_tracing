@@ -9,6 +9,8 @@ class sphere:public intersect
 		sphere(const vec_type &h,value_type r,material *ma);
 		// ~sphere();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+		virtual vec_type random_poin()const override;
+		virtual value_type size()const override;
 		const value_type r()const;
 		const vec_type& heart()const;
 	private:

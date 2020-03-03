@@ -29,6 +29,13 @@ const vec_type random_unit_sphere()
 	while(dot(p,p)+eps>=1.)p=2.*vec_type(random_unit_figure(),random_unit_figure(),random_unit_figure())-vec_type(1.,1.,1.);
 	return p;
 }
+const int random_int(int l,int r)
+{
+	int len=r-l+1;
+	value_type tmp=((value_type)len-eps)*random_unit_figure();
+	return floor(tmp);
+}
+
 
 vec_type* perlin_generate()
 {
@@ -44,6 +51,18 @@ int* perlin_generate_perm()
 	shuffle(p,p+256,seed);
 	return p;
 }
+
+value_type integer_radical_inverse(int base,int num)//把这个base进制的数镜像到小数点右边去
+{
+	long long p=1,inv=0;
+	for(;num>0;num/=base,p*=(long long)base)inv=inv*base+(long long)(num%base);
+	return (value_type)inv/p;//除以p将这个数镜像到小数点右边
+
+}
+value_type halton(int dimension, int index){return integer_radical_inverse(special_numbers::prime[dimension-1],index);}
+value_type hammersley(int dimension,int index,int n){return dimension==1?(value_type)index/n:integer_radical_inverse(special_numbers::prime[dimension-2],index);}
+value_type halton_scrambling(int index){return (special_numbers::faure_permutation[index%125u]*1953125u+special_numbers::faure_permutation[(index/125u)%125u]*15625u+special_numbers::faure_permutation[(index/15625u)%125u]*125u+special_numbers::faure_permutation[(index/1953125u)%125u])*(0x1.fffffep-1/244140625u);}
+
 
 value_type return_self(value_type u){return u;}
 value_type trans_function(value_type u){return u*u*u*(u*(6*u-15)+10);}

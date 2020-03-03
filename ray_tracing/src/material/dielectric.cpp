@@ -12,7 +12,7 @@ dielectric::dielectric(value_type RI,texture *albedo,texture *emit,value_type in
 	else _emit=albedo;
 	_intensity=intensity;
 }
-bool dielectric::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered)const
+bool dielectric::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered,value_type &pdf_value)const
 {
 	vec_type outward_normal,refracted,reflected=reflect(InRay.direction(),info._n);
 	value_type eta,cos,refract_prob=1.;

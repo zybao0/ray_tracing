@@ -24,3 +24,10 @@ bool triangle::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &r
 	// cout<<endl;
 	return 1;
 }
+vec_type triangle::random_poin()const
+{
+	int u=random_unit_figure(),v=random_unit_figure();
+	while(u+v>1)u=random_unit_figure(),v=random_unit_figure();
+	return _heart+u*_edge1+v*_edge2;
+}
+value_type triangle::size()const{0.5*cross(_edge1,_edge2).normal();}

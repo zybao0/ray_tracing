@@ -12,6 +12,8 @@ const value_type INF=0x3f3f3f3f;
 const value_type eps=1e-9;
 const value_type pi=acos(-1);
 
+const int monte_carlo_rand_times=20;//有时我们需要使用蒙特卡洛求面积，该数为求面积时随机次数 
+
 class ray
 {
 	public:
@@ -33,6 +35,15 @@ class texture
 {
 	public:
 		virtual vec_type value(value_type u,value_type v,const vec_type &p)const=0;//p为撞击点,返回衰减向量
+};
+
+
+
+class pdf
+{
+	public:
+		virtual value_type value(const vec_type &origin,const vec_type &direction)const=0;//根据向量求出概率密度
+		virtual vec_type generate(const vec_type &origin)const=0;//获得根据pdf生成的随机向量
 };
 
 
@@ -64,7 +75,7 @@ metal表面： 1.根据物理反射定律确定入射光对应的反射光的方
 class material
 {
 	public:
-		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered)const=0;
+		virtual bool scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered,value_type &pdf_value)const=0;
 	//protected:
 	public:
 		vec_type reflect(const vec_type &in,const vec_type &n)const;//反射
@@ -73,6 +84,7 @@ class material
 	protected:
 		texture *_albedo,*_emit;//材质（衰弱三元组）发光
 		value_type _intensity;//光照强度
+		pdf *_pdf;//使用蒙特卡洛
 };
 
 
@@ -120,9 +132,11 @@ class intersect
 		*/
 		intersect();
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const=0;
-		const aabb get_box()const;
+		virtual value_type size()const;
+		virtual vec_type random_poin()const;
+		const aabb& get_box()const;
+		bool not_optimization()const;
 		virtual ~intersect();
-		const bool not_optimization()const;
 	protected:
 		bool _not_optimization;//有些物体（如无穷大平面）返回aabb没有意义，说以选择不优化
 		aabb _box;
@@ -178,6 +192,7 @@ class intersections:public intersect
 		intersect *root;
 		int _acceleration;
 };
+
 
 
 

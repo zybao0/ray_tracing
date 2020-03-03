@@ -14,7 +14,7 @@ metal::metal(texture *albedo,texture *emit,value_type intensity,const value_type
 	else _emit=albedo;
 	_intensity=intensity;
 }
-bool metal::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered)const
+bool metal::scatter(const ray &InRay,const hitInfo &info,vec_type &attenuation,vec_type &emit,ray &scattered,value_type &pdf_value)const
 {
 	vec_type target=reflect(InRay.direction().ret_unitization(),info._n);
 	scattered=ray(info._p,target+_fuzz*random_unit_sphere(),InRay.time());

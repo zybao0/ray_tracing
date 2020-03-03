@@ -10,6 +10,8 @@ class parallelepiped:public intersect
 		parallelepiped(const vec_type &p,const vec_type &edge1,const vec_type &edge2,const vec_type &edge3,material *ma1,material *ma2,material *ma3);//(上下),(前后),(左右)
 		parallelepiped(const vec_type &p,const vec_type &edge1,const vec_type &edge2,const vec_type &edge3,material *ma1,material *ma1_,material *ma2,material *ma2_,material *ma3,material *ma3_);
 		virtual bool hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)const override;
+		virtual vec_type random_poin()const override;
+		virtual value_type size()const override;
 	protected:
 		parallelogram _list[6];
 		//list[0]下面(edge1与edge2围成的面)

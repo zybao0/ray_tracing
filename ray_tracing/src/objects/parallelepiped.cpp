@@ -89,3 +89,14 @@ bool parallelepiped::hit(const ray &sight,value_type t_min,value_type t_max,hitI
 	}
 	return hitSomething;
 }
+vec_type parallelepiped::random_poin()const
+{
+	int t=random_int(0,5);
+	return _list[t].random_poin();
+}
+value_type parallelepiped::size()const
+{
+	value_type s=0;
+	for(int i=0;i<6;i++)s+=_list[i].size();
+	return s;
+}

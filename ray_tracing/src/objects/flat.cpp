@@ -28,3 +28,4 @@ bool flat::hit(const ray &sight,value_type t_min,value_type t_max,hitInfo &rec)c
 	// cout<<endl;
 	return 1;
 }
+vec_type flat::random_poin()const{return _heart+cross(_n,random_unit_sphere())/(random_unit_figure()+eps);}

@@ -28,3 +28,4 @@ bool moving_sphere::hit(const ray &sight,value_type t_min,value_type t_max,hitIn
 	}
 	return 0;
 }
+value_type moving_sphere::size()const{return 4*pi*_radius*_radius;}

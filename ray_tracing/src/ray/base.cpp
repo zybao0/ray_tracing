@@ -29,8 +29,10 @@ value_type material::schlick(const value_type cosine,const value_type RI)const//
 }
 
 intersect::intersect(){}
-const aabb intersect::get_box()const{return _box;}
-const bool intersect::not_optimization()const{return _not_optimization;}
+value_type intersect::size()const{return monte_carlo_rand_times;}
+vec_type intersect::random_poin()const{return vec_type(0,0,0);}
+const aabb& intersect::get_box()const{return _box;}
+bool intersect::not_optimization()const{return _not_optimization;}
 intersect::~intersect(){}
 
 intersect_cmp(intersect *a,intersect *b){return a->not_optimization()<b->not_optimization();}

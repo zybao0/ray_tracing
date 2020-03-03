@@ -24,4 +24,6 @@ bool parallelogram::hit(const ray &sight,value_type t_min,value_type t_max,hitIn
 	// cout<<endl;
 	return 1;
 }
+vec_type parallelogram::random_poin()const{return _p+random_unit_figure()*_edge1+random_unit_figure()*_edge2;}
+value_type parallelogram::size()const{cross(_edge1,_edge2).normal();}
 const void parallelogram::flit_n(){_n=-_n;}
